@@ -29,7 +29,7 @@ smallvec = "1.6.1"
 walkdir = "2.3.1"
 ######### 0L ########
 # todo v7
-# vdf = { git = "https://github.com/simsekgokhan/libra-v7", rev = "81c77dd" }
+vdf = "0.1.0"
 # rust_decimal= { version = "1.10.3", default-features = true, features = ["maths"] }
 # tiny-keccak = { version = "2.0.2", features = ["keccak"] }
 # ethers = {version = "0.1.3"}

@@ -20,7 +20,7 @@ use std::{collections::VecDeque, sync::Arc};
 use move_binary_format::errors::{PartialVMError, PartialVMResult};
 use smallvec::smallvec;
 // use crate::natives::ol_counters::{
-//     MOVE_VM_NATIVE_VERIFY_VDF_LATENCY, 
+//     MOVE_VM_NATIVE_VERIFY_VDF_LATENCY,
 //     MOVE_VM_NATIVE_VERIFY_VDF_PROOF_COUNT,
 //     MOVE_VM_NATIVE_VERIFY_VDF_PROOF_ERROR_COUNT
 // };
@@ -37,7 +37,7 @@ pub struct VerifyGasParameters {
     pub base: InternalGas,
 }
 
-/// Rust implementation of Move's `native public fun verify(challenge: vector<u8>, 
+/// Rust implementation of Move's `native public fun verify(challenge: vector<u8>,
 /// difficulty: u64, alleged_solution: vector<u8>): bool`
 pub fn native_verify(
     gas_params: &VerifyGasParameters,
@@ -48,8 +48,8 @@ pub fn native_verify(
     // temporary logging.
     // let start_time = Instant::now();
     // let metric_timer = MOVE_VM_NATIVE_VERIFY_VDF_LATENCY.start_timer(); // 0L todo
-    
-    if arguments.len() != 4 {
+
+    if arguments.len() != 5 {
         let msg = format!(
             "wrong number of arguments for vdf_verify expected 4 found {}",
             arguments.len()
@@ -60,6 +60,7 @@ pub fn native_verify(
     // MOVE_VM_NATIVE_VERIFY_VDF_PROOF_COUNT.inc(); // 0L todo
 
     // pop the arguments (reverse order).
+    let wesolowski = pop_arg!(arguments, Reference).read_ref()?.value_as::<bool>()?; // will do pietrezak if `false`.
     let security = pop_arg!(arguments, Reference).read_ref()?.value_as::<u64>()?;
     let difficulty = pop_arg!(arguments, Reference).read_ref()?.value_as::<u64>()?;
     let solution = pop_arg!(arguments, Reference).read_ref()?.value_as::<Vec<u8>>()?;
@@ -75,8 +76,13 @@ pub fn native_verify(
         );
     }
 
-    let v = vdf::PietrzakVDFParams(security as u16).new();
-    let result = v.verify(&challenge, difficulty, &solution);
+    let result = if wesolowski {
+      let v = vdf::PietrzakVDFParams(security as u16).new();
+      v.verify(&challenge, difficulty, &solution)
+    } else {
+      let v = vdf::WesolowskiVDFParams(security as u16).new();
+      v.verify(&challenge, difficulty, &solution)
+    };
 
     let return_values = smallvec![Value::bool(result.is_ok())];
 
@@ -110,7 +116,7 @@ pub struct ExtractAddressFromChallengeGasParameters {
 }
 
 // Extracts the first 32 bits of the vdf challenge which is the auth_key
-// Auth Keys can be turned into an AccountAddress type, to be serialized to 
+// Auth Keys can be turned into an AccountAddress type, to be serialized to
 // a move address type.
 pub fn native_extract_address_from_challenge(
     gas_params: &ExtractAddressFromChallengeGasParameters,
@@ -120,7 +126,7 @@ pub fn native_extract_address_from_challenge(
 ) -> PartialVMResult<NativeResult> {
     let challenge_vec = pop_arg!(arguments, Reference).read_ref()?.value_as::<Vec<u8>>()?;
 
-    // We want to use Diem AuthenticationKey::derived_address() here but this creates 
+    // We want to use Diem AuthenticationKey::derived_address() here but this creates
     // libra (and as a result cyclic) dependency which we definitely do not want
     const AUTHENTICATION_KEY_LENGTH: usize = 32;
     let auth_key_vec = &challenge_vec[..AUTHENTICATION_KEY_LENGTH];
@@ -160,7 +166,7 @@ pub struct GasParameters {
 pub fn make_all(gas_params: GasParameters) -> impl Iterator<Item = (String, NativeFunction)> {
     let natives = [
         ("verify", make_native_verify(gas_params.verify)),
-        ("extract_address_from_challenge", 
+        ("extract_address_from_challenge",
             make_native_extract_address_from_challenge(gas_params.extract_address_from_challenge)),
     ];
 
