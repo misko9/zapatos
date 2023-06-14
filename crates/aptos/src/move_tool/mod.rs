@@ -133,13 +133,13 @@ pub struct FrameworkPackageArgs {
     ///
     /// This is mutually exclusive with `--framework-local-dir`
     #[clap(long, group = "framework_package_args")]
-    pub(crate) framework_git_rev: Option<String>,
+    pub framework_git_rev: Option<String>, //////// 0L //////// make public
 
     /// Local framework directory for the Aptos framework
     ///
     /// This is mutually exclusive with `--framework-git-rev`
     #[clap(long, parse(from_os_str), group = "framework_package_args")]
-    pub(crate) framework_local_dir: Option<PathBuf>,
+    pub framework_local_dir: Option<PathBuf>, //////// 0L //////// make public
 
     /// Skip pulling the latest git dependencies
     ///
@@ -147,7 +147,7 @@ pub struct FrameworkPackageArgs {
     /// to no ability to pull git dependencies.  This will allow overriding
     /// this for local development.
     #[clap(long)]
-    pub(crate) skip_fetch_latest_git_deps: bool,
+    pub skip_fetch_latest_git_deps: bool, //////// 0L //////// make public
 }
 
 impl FrameworkPackageArgs {
@@ -212,6 +212,59 @@ impl FrameworkPackageArgs {
                 .as_bytes(),
         )
     }
+}
+
+//////// 0L ////////
+/// create a move directory with a manifest and a source file
+/// this is used to create scripts temporarily that need to be compiled before
+/// we can get the sha3 hash of the script "execution_hash"
+pub fn init_move_dir_generic(
+    package_dir: &Path, // path to the .move script
+    name: &str, // name of the script
+    // addresses: BTreeMap<String, ManifestNamedAddress>,
+    // prompt_options: PromptOptions,
+    framework_name: String,
+    framework_local_dir: PathBuf,
+
+) -> CliTypedResult<()> {
+    let prompt_options = PromptOptions::yes();
+    let move_toml = package_dir.join(SourcePackageLayout::Manifest.path());
+    check_if_file_exists(move_toml.as_path(), prompt_options)?;
+    create_dir_if_not_exist(
+        package_dir
+            .join(SourcePackageLayout::Sources.path())
+            .as_path(),
+    )?;
+
+    // Add the framework dependency if it's provided
+    let mut dependencies = BTreeMap::new();
+
+    dependencies.insert(framework_name, Dependency {
+        local: Some(framework_local_dir.display().to_string()),
+        git: None,
+        rev: None,
+        subdir: None,
+        aptos: None,
+        address: None,
+    });
+
+    let manifest = MovePackageManifest {
+        package: PackageInfo {
+            name: name.to_string(),
+            version: "1.0.0".to_string(),
+            author: None,
+        },
+        addresses: BTreeMap::new(),
+        dependencies,
+    };
+
+    write_to_file(
+        move_toml.as_path(),
+        SourcePackageLayout::Manifest.location_str(),
+        toml::to_string_pretty(&manifest)
+            .map_err(|err| CliError::UnexpectedError(err.to_string()))?
+            .as_bytes(),
+    )
 }
 
 /// Creates a new Move package at the given location

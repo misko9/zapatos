@@ -173,6 +173,22 @@ pub async fn new_local_swarm_with_aptos(num_validators: usize) -> LocalSwarm {
         .await
 }
 
+//////// 0L ////////
+pub async fn new_local_swarm_with_release(num_validators: usize, release: ReleaseBundle) -> LocalSwarm {
+  let mut sw = SwarmBuilder {
+    local: true,
+    num_validators: NonZeroUsize::new(num_validators).unwrap(),
+    num_fullnodes: 0,
+    genesis_framework: Some(release),
+    init_config: None,
+    vfn_config: None,
+    init_genesis_config: None,
+  };
+
+  sw.build().await
+}
+//////// end 0L ////////
+
 #[tokio::test]
 async fn test_prevent_starting_nodes_twice() {
     // Create a validator swarm of 1 validator node

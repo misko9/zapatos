@@ -337,7 +337,7 @@ pub fn validate_genesis_config(genesis_config: &GenesisConfiguration) { ////////
     );
 }
 
-fn exec_function(
+pub fn exec_function( //////// 0L //////// vendorize make public
     session: &mut SessionExt<impl MoveResolver>,
     module_name: &str,
     function_name: &str,

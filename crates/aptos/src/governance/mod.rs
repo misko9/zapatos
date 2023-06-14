@@ -735,14 +735,14 @@ pub struct CompileScriptFunction {
     pub compiled_script_path: Option<PathBuf>,
 
     #[clap(flatten)]
-    pub(crate) framework_package_args: FrameworkPackageArgs,
+    pub framework_package_args: FrameworkPackageArgs, //////// 0L //////// make public
 
     #[clap(long)]
-    pub(crate) bytecode_version: Option<u32>,
+    pub bytecode_version: Option<u32>, //////// 0L //////// make public
 }
 
 impl CompileScriptFunction {
-    pub(crate) fn compile(
+    pub fn compile( //////// 0L ////////
         &self,
         script_name: &str,
         prompt_options: PromptOptions,
