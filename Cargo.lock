@@ -1316,6 +1316,7 @@ dependencies = [
  "tempfile",
  "thiserror",
  "tiny-keccak",
+ "vdf 0.1.0 (git+https://github.com/0o-de-lally/verifiable_delay.git)",
 ]
 
 [[package]]
@@ -3991,8 +3992,14 @@ version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0700ddab506f33b20a03b13996eccd309a48e5ff77d0d95926aa0210fb4e95f1"
 dependencies = [
- "bit-vec",
+ "bit-vec 0.6.3",
 ]
+
+[[package]]
+name = "bit-vec"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f59bbe95d4e52a6398ec21238d31577f2b28a9d86807f06ca59d191d8440d0bb"
 
 [[package]]
 name = "bit-vec"
@@ -4496,6 +4503,15 @@ name = "classgroup"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e828210e45744aa4ab0dbbabad0404de03f268728aeeda9a22cec8db836ea13"
+dependencies = [
+ "libc",
+ "num-traits 0.2.15",
+]
+
+[[package]]
+name = "classgroup"
+version = "0.1.0"
+source = "git+https://github.com/0o-de-lally/verifiable_delay.git#97bc59431ae98a9aad87e7a05f7997d5586275a9"
 dependencies = [
  "libc",
  "num-traits 0.2.15",
@@ -8366,7 +8382,7 @@ dependencies = [
  "sha3 0.9.1",
  "smallvec",
  "tempfile",
- "vdf",
+ "vdf 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "walkdir",
 ]
 
@@ -12374,9 +12390,21 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d273cdec52f00f63a97053f3ce44b806202cf3f54cd82209004b9d08fab97228"
 dependencies = [
- "classgroup",
+ "classgroup 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.15",
  "sha2 0.8.2",
+]
+
+[[package]]
+name = "vdf"
+version = "0.1.0"
+source = "git+https://github.com/0o-de-lally/verifiable_delay.git#97bc59431ae98a9aad87e7a05f7997d5586275a9"
+dependencies = [
+ "bit-vec 0.5.1",
+ "classgroup 0.1.0 (git+https://github.com/0o-de-lally/verifiable_delay.git)",
+ "num-traits 0.2.15",
+ "sha2 0.8.2",
+ "sha3 0.8.2",
 ]
 
 [[package]]
