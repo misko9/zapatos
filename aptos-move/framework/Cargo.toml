@@ -13,6 +13,9 @@ repository = { workspace = true }
 rust-version = { workspace = true }
 
 [dependencies]
+# ///////// OL ////////
+vdf = { git = "https://github.com/0o-de-lally/verifiable_delay.git" }
+
 anyhow = { workspace = true }
 aptos-aggregator = { workspace = true }
 aptos-crypto = { workspace = true, features = ["fuzzing"] }

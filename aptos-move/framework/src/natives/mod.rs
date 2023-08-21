@@ -19,6 +19,11 @@ pub mod transaction_context;
 pub mod type_info;
 pub mod util;
 
+//////// 0L ////////
+pub mod ol_native_vdf;
+//////// end 0L ////////
+
+
 use crate::natives::cryptography::multi_ed25519;
 use aggregator_natives::{aggregator, aggregator_factory};
 use aptos_gas_algebra_ext::AbstractValueSize;
@@ -290,6 +295,17 @@ pub fn all_natives(
             );
         };
     }
+
+    //////// 0L ////////
+    add_natives_from_module!(
+        "ol_native_vdf",
+        ol_native_vdf::make_all(
+            gas_params.account.create_signer.clone(),
+            timed_features.clone(),
+            features.clone()
+        )
+    );
+    //////// end 0L ////////
 
     add_natives_from_module!(
         "account",
