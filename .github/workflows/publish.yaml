@@ -1,0 +1,67 @@
+name: node bin
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+rc[0-9]+'
+jobs:
+  publish:
+    permissions:
+      contents: write
+    # needs: heat
+    strategy:
+      fail-fast: true
+    name: publish
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: dtolnay/rust-toolchain@1.66.1
+        with:
+          components: rustfmt
+
+######## CACHE ########
+      - name: system packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: build-essential ca-certificates clang curl git libpq-dev libssl-dev pkg-config lsof lld libgmp-dev
+          version: 1.0
+
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: caching
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v1"
+          shared-key: "zapatos" # to share across CI builds, so it is not job-id specific
+          cache-on-failure: true
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: false
+
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: cargo release build
+      # size optimized binary with profile.cli
+        run: cargo b --profile cli -p aptos-node -p aptos
+
+######## PUBLISH ########
+
+      - name: publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/cli/aptos*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
