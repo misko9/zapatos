@@ -1139,7 +1139,7 @@ impl CliCommand<()> for RunLocalTestnet {
                 Some(test_dir_copy),
                 false,
                 false,
-                aptos_cached_packages::head_release_bundle(),
+                &aptos_cached_packages::head_release_bundle(),
                 rng,
             );
             eprintln!("Node stopped unexpectedly {:#?}", result);
