@@ -59,7 +59,15 @@ pub fn get_aptos_node_binary_from_worktree() -> Result<(String, PathBuf)> {
         revision.push_str("-dirty");
     }
 
-    let bin_path = cargo_build_aptos_node(&metadata.workspace_root, &metadata.target_directory)?;
+    /////// 0L /////////
+    // try to provide an executable instead of rebuilding from source
+    // e.g. ZAPATOS_NODE_BIN_PATH=/zapatos/target/release/aptos-node
+    let path = std::env::var("ZAPATOS_NODE_BIN_PATH");
+    let bin_path = if let Some(p) = path.ok() {
+      PathBuf::from(p) // must be the path of the executable
+    } else {
+      cargo_build_aptos_node(&metadata.workspace_root, &metadata.target_directory)?
+    };
 
     Ok((revision, bin_path))
 }
