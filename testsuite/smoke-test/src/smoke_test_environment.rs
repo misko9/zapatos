@@ -10,12 +10,13 @@ use aptos_forge::{ActiveNodesGuard, Factory, LocalFactory, LocalSwarm, Node};
 use aptos_framework::ReleaseBundle;
 use aptos_genesis::builder::{InitConfigFn, InitGenesisConfigFn};
 use aptos_infallible::Mutex;
-use aptos_logger::prelude::*;
+use aptos_logger::{self, prelude::*};
 use aptos_types::chain_id::ChainId;
 use once_cell::sync::Lazy;
 use rand::rngs::OsRng;
 use std::{num::NonZeroUsize, sync::Arc};
 use tokio::task::JoinHandle;
+
 
 const SWARM_BUILD_NUM_RETRIES: u8 = 3;
 
@@ -79,7 +80,7 @@ impl SwarmBuilder {
 
     // Gas is not enabled with this setup, it's enabled via forge instance.
     pub async fn build_inner(&mut self) -> anyhow::Result<LocalSwarm> {
-        ::aptos_logger::Logger::new().init();
+        aptos_logger::Logger::new().init();
         info!("Preparing to finish compiling");
         // TODO change to return Swarm trait
         // Add support for forge
@@ -173,6 +174,22 @@ pub async fn new_local_swarm_with_aptos(num_validators: usize) -> LocalSwarm {
         .build()
         .await
 }
+
+//////// 0L ////////
+pub async fn new_local_swarm_with_release(num_validators: usize, release: ReleaseBundle) -> LocalSwarm {
+  let mut sw = SwarmBuilder {
+    local: true,
+    num_validators: NonZeroUsize::new(num_validators).unwrap(),
+    num_fullnodes: 0,
+    genesis_framework: Some(release),
+    init_config: None,
+    vfn_config: None,
+    init_genesis_config: None,
+  };
+
+  sw.build().await
+}
+//////// end 0L ////////
 
 #[tokio::test]
 async fn test_prevent_starting_nodes_twice() {
