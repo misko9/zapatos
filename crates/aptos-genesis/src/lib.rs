@@ -33,17 +33,17 @@ use std::convert::TryInto;
 
 /// Holder object for all pieces needed to generate a genesis transaction
 #[derive(Clone)]
-pub struct GenesisInfo {
+pub struct GenesisInfo { ///////// 0L //////// make public
     /// ChainId for identifying the network
-    chain_id: ChainId,
+    pub chain_id: ChainId,
     /// Key used for minting tokens
-    root_key: Ed25519PublicKey,
+    pub root_key: Ed25519PublicKey,
     /// Set of configurations for validators on the network
-    validators: Vec<Validator>,
+    pub validators: Vec<Validator>,
     /// Released framework packages
-    framework: ReleaseBundle,
+    pub framework: ReleaseBundle,
     /// The genesis transaction, once it's been generated
-    genesis: Option<Transaction>,
+    pub genesis: Option<Transaction>,
 
     /// Whether to allow new validators to join the set after genesis
     pub allow_new_validators: bool,
