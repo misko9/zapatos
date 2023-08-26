@@ -83,7 +83,7 @@ impl Signature {
     /// WARNING: This function assumes that the public keys have been subgroup-checked by the caller
     /// implicitly when verifying their proof-of-possession (PoP) in `ProofOfPossession::verify`.
     pub fn verify_aggregate_arbitrary_msg(&self, msgs: &[&[u8]], pks: &[&PublicKey]) -> Result<()> {
-        let pks = pks
+        /*let pks = pks
             .iter()
             .map(|&pk| &pk.pubkey)
             .collect::<Vec<&blst::min_pk::PublicKey>>();
@@ -96,7 +96,8 @@ impl Signature {
             Ok(())
         } else {
             Err(anyhow!("{:?}", result))
-        }
+        }*/
+        Err(anyhow!("bls12381 verify_aggregate_arbitrary_msg unimplemented"))
     }
 
     /// Serializes the messages of type `T` to bytes and calls `Signature::verify_aggregate_arbitrary_msg`.
